@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HR-помощник — поздравления коллег</title>
+
+  <style>
+    :root {
+      --bg: #f3f6f7;
+      --card: #fff;
+      --text: #243b43;
+      --muted: #70818a;
+      --primary: #22695f;
+      --primary-dark: #185248;
+      --light: #eaf4f0;
+      --gold: #a17c35;
+      --border: #dde6e6;
+      --error: #b33d48;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    button, input { font: inherit; }
+
+    .container {
+      max-width: 1160px;
+      padding: 44px 24px;
+      margin: auto;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 30px;
+      background: var(--light);
+      color: var(--primary);
+      font-size: 12px;
+      font-weight: 750;
+      letter-spacing: .06em;
+    }
+
+    h1 {
+      font-size: clamp(28px, 4vw, 40px);
+      line-height: 1.2;
+      letter-spacing: -.035em;
+      margin: 16px 0 12px;
+    }
+
+    .subtitle {
+      max-width: 760px;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, .9fr) minmax(0, 1.2fr);
+      gap: 24px;
+      margin-top: 30px;
+      align-items: start;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 28px;
+      box-shadow: 0 10px 35px #243b4305;
+    }
+
+    h2 { font-size: 20px; margin: 0 0 20px; }
+
+    .context {
+      background: #faf8f1;
+      border-left: 3px solid var(--gold);
+      padding: 14px 16px;
+      border-radius: 0 10px 10px 0;
+      font-size: 13px;
+      margin-bottom: 24px;
+    }
+
+    .context strong {
+      display: block;
+      color: var(--gold);
+      margin-bottom: 4px;
+    }
+
+    .field { margin-bottom: 20px; }
+
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: 650;
+      margin-bottom: 7px;
+    }
+
+    input {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      padding: 13px 14px;
+      color: var(--text);
+      background: #fcfdfd;
+    }
+
+    input::placeholder { color: #8b999f; }
+
+    input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px #22695f16;
+    }
+
+    .hint {
+      font-size: 12px;
+      color: var(--muted);
+      margin: 7px 0 0;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    button {
+      border: 1px solid transparent;
+      border-radius: 10px;
+      padding: 12px 15px;
+      font-size: 14px;
+      font-weight: 650;
+      cursor: pointer;
+    }
+
+    button:focus-visible {
+      outline: 3px solid #80bdb1;
+      outline-offset: 3px;
+    }
+
+    .primary { background: var(--primary); color: white; }
+    .primary:hover { background: var(--primary-dark); }
+    .secondary { background: var(--light); color: var(--primary); }
+    .secondary:hover { background: #dceee6; }
+    button:disabled { opacity: .45; cursor: not-allowed; }
+
+    .result-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .result-header h2 { margin: 0; }
+
+    #result {
+      min-height: 340px;
+      background: #fbfcfc;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      line-height: 1.9;
+    }
+
+    #result.empty {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    #status {
+      min-height: 24px;
+      margin: 14px 0 0;
+      font-size: 13px;
+      color: var(--primary);
+    }
+
+    #status.error { color: var(--error); }
+
+    footer {
+      margin-top: 24px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 850px) {
+      .grid { grid-template-columns: 1fr; }
+      .container { padding: 28px 16px; }
+      .card { padding: 22px; }
+      #result { min-height: 260px; }
+    }
+
+    @media (max-width: 420px) {
+      .actions { flex-direction: column; }
+      .actions button { width: 100%; }
+      .card { padding: 18px; }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="container">
+    <header>
+      <span class="badge">HR-ПОМОЩНИК · КОМАНДА ОТКРЫТИЙ</span>
+      <h1>Поздравления с характером профессии</h1>
+      <p class="subtitle">
+        Тёплые слова для коллег, которые помогают открывать новые перспективы —
+        в экспедициях, лабораториях и офисе.
+      </p>
+    </header>
+
+    <div class="grid">
+      <section class="card" aria-labelledby="form-title">
+        <h2 id="form-title">Данные для поздравления</h2>
+
+        <div class="context">
+          <strong>Контекст компании зафиксирован</strong>
+          Геологоразведочная компания — филиал золотодобывающей компании.
+          Генератор учитывает эту специфику, не повторяя название отрасли
+          в готовом поздравлении.
+        </div>
+
+        <form id="form">
+          <div class="field">
+            <label for="position">Должность</label>
+            <input
+              id="position"
+              name="position"
+              placeholder="Например, ведущий геолог или логист"
+              maxlength="150"
+              required
+              autocomplete="off"
+              aria-describedby="position-hint"
+            >
+            <p id="position-hint" class="hint">
+              Основной источник профессиональной персонализации.
+            </p>
+          </div>
+
+          <div class="field">
+            <label for="department">Отдел</label>
+            <input
+              id="department"
+              name="department"
+              placeholder="Например, отдел снабжения"
+              maxlength="150"
+              required
+              autocomplete="off"
+            >
+          </div>
+
+          <p class="hint">
+            Вместо имени в поздравлении будет <strong>[ФИО]</strong>.
+            Замените эту метку вручную перед отправкой.
+          </p>
+
+          <div class="actions">
+            <button type="submit" class="primary">
+              Сгенерировать поздравление
+            </button>
+            <button type="button" id="regenerate" class="secondary" disabled>
+              Перегенерировать
+            </button>
+          </div>
+
+          <p class="hint">
+            Перегенерация использует данные последнего созданного поздравления.
+          </p>
+        </form>
+      </section>
+
+      <section class="card" aria-labelledby="result-title">
+        <div class="result-header">
+          <h2 id="result-title">Готовый текст</h2>
+          <button type="button" class="secondary" id="copy" disabled>
+            Копировать в буфер обмена
+          </button>
+        </div>
+
+        <div id="result" class="empty" aria-live="polite" aria-atomic="true">Укажите должность и отдел.
+Здесь появится персонализированное поздравление.</div>
+
+        <p id="status" role="status"></p>
+        <p class="hint">
+          Перед отправкой замените [ФИО] и проверьте соответствие пожеланий
+          реальным обязанностям сотрудника.
+        </p>
+      </section>
+    </div>
+
+    <footer>
+      Работает локально, без API и передачи данных.
+      Использует распознавание ключевых слов и вариативную базу пожеланий.
+    </footer>
+  </main>
+
+  <script>
+    "use strict";
+
+    /*
+     * Локальный экспертный генератор, не нейросеть.
+     *
+     * Зафиксированный контекст:
+     * геологоразведочный филиал золотодобывающей компании.
+     *
+     * Порядок работы:
+     * 1. Определение профессионального профиля по должности.
+     * 2. При отсутствии совпадений — анализ отдела.
+     * 3. Сборка текста из вступления, профессионального пожелания,
+     *    ненавязчивого контекста компании и личного пожелания.
+     * 4. Проверка структуры, повторов и уникальности в текущей вкладке.
+     */
+
+    const form = document.getElementById("form");
+    const result = document.getElementById("result");
+    const status = document.getElementById("status");
+    const regenerate = document.getElementById("regenerate");
+    const copy = document.getElementById("copy");
+
+    const history = new Set();
+
+    let lastData = null;
+    let currentText = "";
+
+    const normalize = value =>
+      value.normalize("NFKC")
+        .toLocaleLowerCase("ru")
+        .replace(/ё/g, "е")
+        .replace(/\s+/g, " ")
+        .trim();
+
+    const clean = value => value.replace(/\s+/g, " ").trim();
+
+    function pick(list) {
+      if (window.crypto && window.crypto.getRandomValues) {
+        const values = new Uint32Array(1);
+        window.crypto.getRandomValues(values);
+        return list[Math.floor(values[0] / 4294967296 * list.length)];
+      }
+      return list[Math.floor(Math.random() * list.length)];
+    }
+
+    function countOccurrences(text, value) {
+      const source = normalize(text);
+      const target = normalize(value);
+      if (!target) return 0;
+
+      let count = 0;
+      let index = 0;
+
+      while ((index = source.indexOf(target, index)) !== -1) {
+        count++;
+        index += target.length;
+      }
+      return count;
+    }
+
+    const profiles = [
+      {
+        id: "geophysics",
+        label: "геофизика",
+        patterns: [/геофиз/, /сейсм/, /магнитометр/, /электроразвед/],
+        wishes: [
+          "Пусть даже самые сложные сигналы складываются в ясную картину, а точность наблюдений помогает находить перспективные направления.",
+          "Желаем уверенно видеть закономерности за множеством измерений и получать результаты, которым можно доверять.",
+          "Пусть каждый новый участок приносит интересные задачи, а внимательный анализ открывает то, что прежде оставалось незаметным."
+        ]
+      },
+      {
+        id: "geology",
+        label: "геология",
+        patterns: [/геолог/, /гидрогеолог/, /минералог/, /петрограф/],
+        wishes: [
+          "Пусть наблюдательность помогает замечать важное, гипотезы находят убедительное подтверждение, а новые участки открывают достойные перспективы.",
+          "Желаем интересных находок, точных выводов и того особого удовлетворения, когда разрозненные наблюдения складываются в целостную картину.",
+          "Пусть каждый сезон приносит новые знания, полевые записи становятся основой уверенных решений, а профессиональное чутьё получает надёжное подтверждение."
+        ]
+      },
+      {
+        id: "survey",
+        label: "геодезия и маркшейдерия",
+        patterns: [/геодез/, /маркшейдер/, /топограф/, /картограф/],
+        wishes: [
+          "Пусть измерения отличаются точностью, ориентиры остаются надёжными, а каждый новый участок становится понятнее благодаря вашему мастерству.",
+          "Желаем уверенных координат, безупречной согласованности данных и спокойствия в задачах, где важна каждая деталь.",
+          "Пусть карты и планы помогают команде двигаться уверенно, а сложный рельеф становится интересной профессиональной задачей."
+        ]
+      },
+      {
+        id: "drilling",
+        label: "буровые работы",
+        patterns: [/буров/, /буриль/, /помбур/],
+        wishes: [
+          "Пусть каждый метр проходки даётся уверенно, оборудование работает надёжно, а смены проходят слаженно и безопасно.",
+          "Желаем устойчивой работы техники, взаимопонимания в бригаде и результатов, которые оправдывают приложенные усилия.",
+          "Пусть сложные условия встречают достойный ответ в вашем опыте, а каждый рабочий день завершается благополучно."
+        ]
+      },
+      {
+        id: "laboratory",
+        label: "лабораторные исследования",
+        patterns: [/лаборант/, /лаборатор/, /химик/, /пробир/, /пробоподготов/],
+        wishes: [
+          "Пусть каждая серия исследований приносит воспроизводимые результаты, а внимательность к деталям становится опорой для важных решений.",
+          "Желаем точных измерений, надёжных методик и удовлетворения от работы, в которой за небольшими образцами стоят большие перспективы.",
+          "Пусть приборы работают стабильно, результаты не оставляют сомнений, а профессиональная аккуратность получает заслуженное признание."
+        ]
+      },
+      {
+        id: "logistics",
+        label: "логистика и снабжение",
+        patterns: [/логист/, /снабжен/, /закуп/, /экспедитор/, /кладовщик/, /склад/],
+        wishes: [
+          "Пусть даже самые удалённые площадки получают всё необходимое вовремя, маршруты складываются удачно, а партнёры держат слово.",
+          "Желаем точных поставок, согласованных действий и спокойной уверенности в том, что каждое звено большого процесса работает надёжно.",
+          "Пусть расстояния остаются лишь цифрами в маршрутах, договорённости выполняются, а сложные задачи решаются без лишней суеты."
+        ]
+      },
+      {
+        id: "transport",
+        label: "транспорт",
+        patterns: [/водител/, /автомобил/, /транспорт/, /машинист/, /тракторист/],
+        wishes: [
+          "Пусть маршруты проходят благополучно, техника остаётся надёжной, а после каждого рейса ждёт заслуженный отдых.",
+          "Желаем уверенности на каждом километре, внимательных попутчиков и безопасного возвращения после любых рабочих поездок.",
+          "Пусть даже непростые дороги поддаются опыту, графики остаются разумными, а поддержка коллег всегда будет рядом."
+        ]
+      },
+      {
+        id: "safety",
+        label: "безопасность и охрана труда",
+        patterns: [/охран.*труд/, /промышленн.*безопас/, /техник.*безопас/, /бдд/],
+        wishes: [
+          "Пусть внимательное отношение к рискам становится общей привычкой, а каждый рабочий день заканчивается благополучным возвращением коллег домой.",
+          "Желаем понимания со стороны команды, действенных решений и спокойной уверенности в том, что важные правила работают на практике.",
+          "Пусть профилактика всегда опережает проблемы, рекомендации находят поддержку, а безопасность остаётся безусловным приоритетом."
+        ]
+      },
+      {
+        id: "ecology",
+        label: "экология",
+        patterns: [/эколог/, /природоохран/, /окружающ.*сред/],
+        wishes: [
+          "Пусть бережное отношение к природе становится частью каждого решения, а ваши рекомендации помогают сохранять баланс между задачами и ответственностью.",
+          "Желаем точных наблюдений, содержательного диалога с коллегами и результатов, которые приносят пользу не только сегодня, но и в будущем.",
+          "Пусть профессиональная настойчивость помогает защищать важное, а внимательность к окружающему миру находит отклик в команде."
+        ]
+      },
+      {
+        id: "maintenance",
+        label: "техника и инженерия",
+        patterns: [/механик/, /энергетик/, /электрик/, /электромонтер/, /слесар/, /инженер/, /ремонт/],
+        wishes: [
+          "Пусть оборудование работает устойчиво, причины сложных неисправностей находятся быстро, а продуманные решения служат долго.",
+          "Желаем надёжной техники, точной диагностики и возможности предупреждать неполадки раньше, чем они повлияют на общую работу.",
+          "Пусть инженерная мысль находит простые и надёжные ответы, а каждый успешно решённый вопрос приносит заслуженное удовлетворение."
+        ]
+      },
+      {
+        id: "finance",
+        label: "финансы и учёт",
+        patterns: [/бухгалтер/, /финанс/, /экономист/, /казнач/, /аудитор/, /сметчик/],
+        wishes: [
+          "Пусть расчёты сходятся, документы поступают вовремя, а точность и дальновидность помогают большим планам обрести прочную основу.",
+          "Желаем ясности в цифрах, взвешенных решений и спокойного рабочего ритма даже в самые ответственные отчётные периоды.",
+          "Пусть за каждой таблицей видны реальные возможности, ресурсы распределяются разумно, а внимательность получает заслуженное признание."
+        ]
+      },
+      {
+        id: "hr",
+        label: "работа с персоналом",
+        patterns: [/персонал/, /кадров/, /кадр/, /рекрутер/, /\bhr\b/],
+        wishes: [
+          "Пусть нужные люди находят своё место в команде, важные разговоры проходят с доверием, а внимание к коллегам возвращается искренней благодарностью.",
+          "Желаем удачных встреч, точных кадровых решений и радости от того, как раскрывается потенциал людей.",
+          "Пусть даже при больших расстояниях между площадками удаётся сохранять чувство единой команды и слышать тех, кому нужна поддержка."
+        ]
+      },
+      {
+        id: "it",
+        label: "ИТ и данные",
+        patterns: [/программист/, /разработчик/, /системн.*администратор/, /сисадмин/, /\bit\b/, /ит\b/, /информационн/, /аналитик.*данн/],
+        wishes: [
+          "Пусть системы работают устойчиво, данные остаются защищёнными, а связь с удалёнными площадками не подводит в ответственные моменты.",
+          "Желаем элегантных решений, спокойных запусков и технологий, которые действительно облегчают работу команды.",
+          "Пусть сложные задачи превращаются в понятные алгоритмы, а полезные улучшения находят быстрый отклик у коллег."
+        ]
+      },
+      {
+        id: "legal",
+        label: "правовое сопровождение",
+        patterns: [/юрист/, /юрисконсульт/, /правов/, /договорн/],
+        wishes: [
+          "Пусть договорённости будут прозрачными, аргументы — убедительными, а внимание к формулировкам помогает уверенно двигаться вперёд.",
+          "Желаем взвешенных решений, конструктивных переговоров и условий, в которых интересы команды надёжно защищены.",
+          "Пусть сложные вопросы находят ясные ответы, документы складываются в стройную систему, а профессиональная предусмотрительность предупреждает риски."
+        ]
+      },
+      {
+        id: "medical",
+        label: "медицинская помощь",
+        patterns: [/врач/, /фельдшер/, /медсестр/, /медицин/],
+        wishes: [
+          "Пусть профессиональная внимательность помогает вовремя замечать важное, а забота о людях возвращается доверием и благодарностью.",
+          "Желаем спокойных смен, достаточных ресурсов для помощи и крепкого собственного здоровья.",
+          "Пусть даже вдали от привычной инфраструктуры рядом будут поддержка команды, надёжное оснащение и уверенность в своих решениях."
+        ]
+      },
+      {
+        id: "support",
+        label: "бытовое и административное обеспечение",
+        patterns: [/повар/, /кухон/, /комендант/, /горничн/, /уборщик/, /уборщиц/, /завхоз/, /секретар/, /делопроизвод/, /офис.менеджер/],
+        wishes: [
+          "Пусть забота о порядке и комфорте получает искреннюю благодарность, а повседневные дела складываются в спокойный и понятный ритм.",
+          "Желаем слаженной работы, внимательного отношения со стороны коллег и ощущения, что ваш вклад замечают и ценят.",
+          "Пусть необходимые мелочи всегда оказываются на своих местах, задачи решаются без лишней спешки, а рабочий день оставляет силы для себя."
+        ]
+      },
+      {
+        id: "management",
+        label: "управление",
+        patterns: [/директор/, /руководител/, /начальник/, /управляющ/, /менеджер.*проект/],
+        wishes: [
+          "Пусть стратегические решения опираются на достоверные данные, команда действует согласованно, а большие цели достигаются последовательно и безопасно.",
+          "Желаем ясного видения перспектив, доверия коллег и возможности превращать сложные задачи в понятный план действий.",
+          "Пусть ответственность сопровождается надёжной поддержкой, инициативы раскрывают сильные стороны команды, а результаты оправдывают доверие."
+        ]
+      }
+    ];
+
+    const universalProfile = {
+      id: "universal",
+      label: "универсальный профессиональный профиль",
+      wishes: [
+        "Пусть повседневные задачи складываются в заметный результат, а профессиональный опыт помогает уверенно справляться с новым.",
+        "Желаем ясных приоритетов, уважения коллег и возможностей, в которых особенно ярко раскрываются ваши сильные стороны.",
+        "Пусть важные дела продвигаются без лишних препятствий, решения приносят пользу, а вклад в работу команды получает признание.",
+        "Желаем находить точные ответы на непростые вопросы и видеть, как ежедневные усилия помогают общему делу."
+      ]
+    };
+
+    const openings = [
+      "От всей души желаем здоровья, внутреннего равновесия и вдохновения для новых свершений.",
+      "Желаем уверенности в своих силах, добрых событий и радости от выбранного пути.",
+      "Пусть новый личный год принесёт интересные возможности и много поводов для улыбки.",
+      "Желаем энергии для важных замыслов и умения замечать хорошее даже в насыщенные дни.",
+      "Пусть впереди будет больше приятных открытий, тёплых встреч и осуществившихся планов.",
+      "Желаем сохранять любопытство к новому, верность своим ценностям и вкус к жизни."
+    ];
+
+    // Контекст общий для всех сотрудников: не предполагает,
+    // что офисный специалист лично работает в полевых условиях.
+    const companyContext = [
+      "В деле, где открытия начинаются с внимательного изучения и общей работы, особенно важны надёжность и взаимная поддержка.",
+      "Пусть связь между полевыми площадками и офисом остаётся крепкой, а общий результат даёт каждому повод для гордости.",
+      "Пусть путь от первых наблюдений до уверенных выводов объединяет команду и открывает новые перспективы.",
+      "За каждым перспективным участком стоит труд многих людей — пусть совместные достижения радуют и вдохновляют.",
+      "Пусть расстояния между площадками не мешают взаимопониманию, а большие задачи решаются благодаря общим усилиям.",
+      "В работе, где сегодняшний поиск становится основой завтрашних решений, пусть всегда находятся место для инициативы и поддержка коллег."
+    ];
+
+    const personalWishes = [
+      "А вне работы пусть ждут домашнее тепло, любимые люди и время для того, что делает вас счастливыми.",
+      "Пусть отдых по-настоящему восстанавливает силы, а личные мечты постепенно становятся реальностью.",
+      "Желаем ярких впечатлений, душевного тепла и встреч, после которых хочется улыбаться.",
+      "Пусть в календаре всегда находится место для путешествий, увлечений и неспешных дней рядом с близкими.",
+      "Пусть личное благополучие остаётся прочной опорой, а каждый день приносит хотя бы одну маленькую радость.",
+      "Желаем беречь себя, чаще радоваться простым вещам и уверенно идти к тому, что важно именно вам."
+    ];
+
+    /*
+     * Нейтральные подписи сохраняют должность и отдел без склонения:
+     * произвольные названия могут быть грамматически несовместимы
+     * с конструкцией «поздравляем нашего ...».
+     */
+    const introductions = [
+      d => `Сегодня день рождения отмечает [ФИО] — должность: «${d.position}», отдел: «${d.department}». С радостью присоединяемся к поздравлениям!`,
+      d => `Сегодня у нашей команды прекрасный повод для тёплых слов: день рождения отмечает [ФИО] (должность — «${d.position}», отдел — «${d.department}»).`,
+      d => `С особым удовольствием поздравляем с днём рождения: [ФИО], должность — «${d.position}», отдел — «${d.department}»!`,
+      d => `Сегодня в центре наших поздравлений — [ФИО] (должность: «${d.position}»; отдел: «${d.department}»). От всей команды — самые добрые пожелания!`
+    ];
+
+    function detectProfile(position, department) {
+      function find(text) {
+        const normalized = normalize(text);
+
+        const matches = profiles.map((profile, index) => ({
+          profile,
+          index,
+          score: profile.patterns.reduce(
+            (sum, pattern) => sum + (pattern.test(normalized) ? 1 : 0),
+            0
+          )
+        })).filter(item => item.score > 0);
+
+        // Профильные обязанности важнее общего признака руководителя.
+        const specific = matches.filter(item => item.profile.id !== "management");
+        const candidates = specific.length ? specific : matches;
+
+        candidates.sort((a, b) => b.score - a.score || a.index - b.index);
+        return candidates[0]?.profile || null;
+      }
+
+      return find(position) || find(department) || universalProfile;
+    }
+
+    function safePool(pool, data) {
+      return pool.filter(sentence =>
+        countOccurrences(sentence, data.position) === 0 &&
+        countOccurrences(sentence, data.department) === 0
+      );
+    }
+
+    function generate(data) {
+      const profile = detectProfile(data.position, data.department);
+
+      if (/$фио$/i.test(data.position + data.department)) {
+        throw new Error("Не добавляйте [ФИО] в поля: метка уже включена во вступление.");
+      }
+
+      const intros = introductions.map(make => make(data)).filter(text =>
+        countOccurrences(text, data.position) === 1 &&
+        countOccurrences(text, data.department) === 1
+      );
+
+      if (!intros.length) {
+        throw new Error(
+          "Должность и отдел совпадают или входят друг в друга. Уточните названия, чтобы каждое значение встречалось ровно один раз."
+        );
+      }
+
+      const starts = safePool(openings, data);
+      const professional = safePool(profile.wishes, data);
+      const contexts = safePool(companyContext, data);
+      const finishes = safePool(personalWishes, data);
+
+      if ([starts, professional, contexts, finishes].some(pool => !pool.length)) {
+        throw new Error(
+          "Не удалось исключить повторы введённых значений. Укажите более полные названия должности и отдела."
+        );
+      }
+
+      // Сначала быстрый случайный подбор.
+      function assemble(intro, opening, wish, context, ending) {
+        const main = `${opening} ${wish} ${context} ${ending}`;
+        return `Добрый день, коллеги!\n${intro}\n${main}\nВаш, HR`;
+      }
+
+      function valid(text) {
+        return !history.has(text) &&
+          countOccurrences(text, "[ФИО]") === 1 &&
+          countOccurrences(text, data.position) === 1 &&
+          countOccurrences(text, data.department) === 1;
+      }
+
+      for (let attempt = 0; attempt < 150; attempt++) {
+        const text = assemble(
+          pick(intros),
+          pick(starts),
+          pick(professional),
+          pick(contexts),
+          pick(finishes)
+        );
+
+        if (valid(text)) {
+          history.add(text);
+          return { text, profile };
+        }
+      }
+
+      // Полный перебор оставшихся комбинаций:
+      // не объявляем базу исчерпанной из-за случайных повторов.
+      for (const intro of intros)
+        for (const opening of starts)
+          for (const wish of professional)
+            for (const context of contexts)
+              for (const ending of finishes) {
+                const text = assemble(intro, opening, wish, context, ending);
+                if (valid(text)) {
+                  history.add(text);
+                  return { text, profile };
+                }
+              }
+
+      throw new Error(
+        "Все доступные варианты для этих данных использованы или исключены проверкой повторов. Уточните данные либо обновите страницу."
+      );
+    }
+
+    function setStatus(message, isError = false) {
+      status.textContent = message;
+      status.classList.toggle("error", isError);
+    }
+
+    function render(data) {
+      try {
+        const generated = generate(data);
+
+        currentText = generated.text;
+        lastData = Object.freeze({ ...data });
+
+        result.textContent = currentText;
+        result.classList.remove("empty");
+
+        copy.disabled = false;
+        regenerate.disabled = false;
+
+        setStatus(
+          `Готово. Тематика: ${generated.profile.label}. Не забудьте заменить [ФИО].`
+        );
+      } catch (error) {
+        setStatus(error.message, true);
+      }
+    }
+
+    form.addEventListener("submit", event => {
+      event.preventDefault();
+
+      const position = clean(form.elements.position.value);
+      const department = clean(form.elements.department.value);
+
+      if (!position || !department) {
+        setStatus("Заполните должность и отдел: одних пробелов недостаточно.", true);
+        (!position ? form.elements.position : form.elements.department).focus();
+        return;
+      }
+
+      render({ position, department });
+    });
+
+    regenerate.addEventListener("click", () => {
+      if (lastData) render(lastData);
+    });
+
+    async function copyText(text) {
+      if (navigator.clipboard && window.isSecureContext) {
+        try {
+          await navigator.clipboard.writeText(text);
+          return;
+        } catch (_) {
+          // Переходим к резервному способу.
+        }
+      }
+
+      const previousFocus = document.activeElement;
+      const textarea = document.createElement("textarea");
+
+      textarea.value = text;
+      textarea.readOnly = true;
+      textarea.style.cssText =
+        "position:fixed;left:-9999px;top:0;opacity:0";
+
+      document.body.appendChild(textarea);
+      textarea.select();
+
+      let success = false;
+
+      try {
+        success = document.execCommand("copy");
+      } finally {
+        textarea.remove();
+        previousFocus?.focus();
+      }
+
+      if (!success) throw new Error("Копирование недоступно");
+    }
+
+    copy.addEventListener("click", async () => {
+      if (!currentText) return;
+
+      try {
+        await copyText(currentText);
+        setStatus("Текст скопирован. Перед отправкой замените [ФИО] на имя сотрудника.");
+      } catch (_) {
+        const selection = window.getSelection();
+        const range = document.createRange();
+
+        range.selectNodeContents(result);
+        selection.removeAllRanges();
+        selection.addRange(range);
+
+        setStatus(
+          "Автокопирование недоступно. Текст выделен: нажмите Ctrl+C или ⌘C.",
+          true
+        );
+      }
+    });
+  </script>
+</body>
+</html>
